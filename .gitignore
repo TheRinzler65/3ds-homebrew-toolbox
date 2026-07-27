@@ -1,0 +1,24 @@
+node_modules
+dist
+.env
+.env.local
+*.log
+
+# Front
+front/node_modules
+front/dist
+
+# Back
+back/node_modules
+back/dist
+
+# Desktop
+desktop/node_modules
+desktop/dist
+desktop/src-tauri/target/
+
+# OS
+Thumbs.db
+.DS_Store
+
+opencode.json

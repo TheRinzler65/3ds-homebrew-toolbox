@@ -1,0 +1,6 @@
+node_modules
+dist
+*.nds
+*.cia
+make_cia_macos
+make_cia.exe

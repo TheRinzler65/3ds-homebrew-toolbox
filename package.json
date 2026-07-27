@@ -1,0 +1,14 @@
+{
+  "name": "multitools-workspace",
+  "private": true,
+  "version": "0.1.0",
+  "description": "MultiTools — Homebrew Toolbox (monorepo)",
+  "scripts": {
+    "front:dev": "cd front && npm run dev",
+    "front:build": "cd front && npm run build",
+    "back:dev": "cd back && npm run dev",
+    "back:build": "cd back && npm run build",
+    "desktop:dev": "cd desktop && npm run dev",
+    "desktop:build": "cd desktop && npm run build"
+  }
+}
