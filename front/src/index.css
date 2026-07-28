@@ -9,8 +9,15 @@
   --radius-xl: 18px;
 }
 
-/* ── Dark theme (default) ────────────────────────────────────────────────── */
-.dark {
+/* ═══════════════════════════════════════════════════════════════════════════
+   THEME SYSTEM
+   ── mode:  .dark (default in :root) / .light
+   ── accent: data-theme="indigo|emerald|rose|amber|sky"
+   ── precedence: .light + data-theme beats single selectors via specificity
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Indigo · Dark (default) ───────────────────────────────────────────── */
+:root, .dark[data-theme="indigo"] {
   --color-bg: #0c0e1a;
   --color-surface: #141726;
   --color-surface-hover: #1a1f33;
@@ -29,8 +36,8 @@
   --color-text-subtle: #64748b;
 }
 
-/* ── Light theme ──────────────────────────────────────────────────────────── */
-:root, .light {
+/* ── Indigo · Light ────────────────────────────────────────────────────── */
+.light, .light[data-theme="indigo"] {
   --color-bg: #f5f6fa;
   --color-surface: #ffffff;
   --color-surface-hover: #f0f1f5;
@@ -47,6 +54,118 @@
   --color-text: #1f2937;
   --color-text-muted: #6b7280;
   --color-text-subtle: #9ca3af;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ACCENT THEMES — each overrides --color-accent* only
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Emerald · Dark ────────────────────────────────────────────────────── */
+.dark[data-theme="emerald"] {
+  --color-bg: #0a1a14;
+  --color-surface: #0f221b;
+  --color-surface-hover: #142e24;
+  --color-surface-raised: #183a2d;
+  --color-border: #1f4a39;
+  --color-border-subtle: #163a2c;
+  --color-accent: #10b981;
+  --color-accent-hover: #34d399;
+  --color-accent-muted: #064e3b;
+  --color-accent-text: #6ee7b7;
+  --color-text: #e2e8f0;
+  --color-text-muted: #94a3b8;
+  --color-text-subtle: #64748b;
+}
+/* ── Emerald · Light ───────────────────────────────────────────────────── */
+.light[data-theme="emerald"] {
+  --color-accent: #059669;
+  --color-accent-hover: #10b981;
+  --color-accent-muted: #d1fae5;
+  --color-accent-text: #047857;
+  --color-success: #16a34a;
+  --color-warning: #d97706;
+  --color-danger: #dc2626;
+}
+
+/* ── Rose · Dark ───────────────────────────────────────────────────────── */
+.dark[data-theme="rose"] {
+  --color-bg: #1c0a12;
+  --color-surface: #260f19;
+  --color-surface-hover: #311421;
+  --color-surface-raised: #3c1929;
+  --color-border: #4d2236;
+  --color-border-subtle: #3d1a2a;
+  --color-accent: #f43f5e;
+  --color-accent-hover: #fb7185;
+  --color-accent-muted: #881337;
+  --color-accent-text: #fda4af;
+  --color-text: #e2e8f0;
+  --color-text-muted: #94a3b8;
+  --color-text-subtle: #64748b;
+}
+/* ── Rose · Light ──────────────────────────────────────────────────────── */
+.light[data-theme="rose"] {
+  --color-accent: #e11d48;
+  --color-accent-hover: #f43f5e;
+  --color-accent-muted: #ffe4e6;
+  --color-accent-text: #be123c;
+  --color-success: #16a34a;
+  --color-warning: #d97706;
+  --color-danger: #dc2626;
+}
+
+/* ── Amber · Dark ──────────────────────────────────────────────────────── */
+.dark[data-theme="amber"] {
+  --color-bg: #1a1408;
+  --color-surface: #241c0c;
+  --color-surface-hover: #2e2410;
+  --color-surface-raised: #382c14;
+  --color-border: #47381a;
+  --color-border-subtle: #382c14;
+  --color-accent: #f59e0b;
+  --color-accent-hover: #fbbf24;
+  --color-accent-muted: #78350f;
+  --color-accent-text: #fde68a;
+  --color-text: #e2e8f0;
+  --color-text-muted: #94a3b8;
+  --color-text-subtle: #64748b;
+}
+/* ── Amber · Light ─────────────────────────────────────────────────────── */
+.light[data-theme="amber"] {
+  --color-accent: #d97706;
+  --color-accent-hover: #f59e0b;
+  --color-accent-muted: #fef3c7;
+  --color-accent-text: #b45309;
+  --color-success: #16a34a;
+  --color-warning: #d97706;
+  --color-danger: #dc2626;
+}
+
+/* ── Sky · Dark ────────────────────────────────────────────────────────── */
+.dark[data-theme="sky"] {
+  --color-bg: #08141e;
+  --color-surface: #0c1c2a;
+  --color-surface-hover: #102536;
+  --color-surface-raised: #142e42;
+  --color-border: #1a3a54;
+  --color-border-subtle: #142e42;
+  --color-accent: #0ea5e9;
+  --color-accent-hover: #38bdf8;
+  --color-accent-muted: #0c4a6e;
+  --color-accent-text: #7dd3fc;
+  --color-text: #e2e8f0;
+  --color-text-muted: #94a3b8;
+  --color-text-subtle: #64748b;
+}
+/* ── Sky · Light ───────────────────────────────────────────────────────── */
+.light[data-theme="sky"] {
+  --color-accent: #0284c7;
+  --color-accent-hover: #0ea5e9;
+  --color-accent-muted: #e0f2fe;
+  --color-accent-text: #0369a1;
+  --color-success: #16a34a;
+  --color-warning: #d97706;
+  --color-danger: #dc2626;
 }
 
 html {

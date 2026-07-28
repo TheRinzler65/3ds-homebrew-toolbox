@@ -6,6 +6,26 @@
     <title>MultiTools — Homebrew Toolbox</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="description" content="Boîte à outils homebrew Nintendo — NDS Forwarder et plus" />
+    <script>
+      (function() {
+        try {
+          var raw = localStorage.getItem("multitools-theme");
+          var theme = "dark", accent = "indigo";
+          if (raw) {
+            var parsed = JSON.parse(raw);
+            if (parsed.state) {
+              if (parsed.state.theme) theme = parsed.state.theme;
+              if (parsed.state.accent) accent = parsed.state.accent;
+            }
+          }
+          document.documentElement.classList.add(theme);
+          document.documentElement.dataset.theme = accent;
+        } catch(e) {
+          document.documentElement.classList.add("dark");
+          document.documentElement.dataset.theme = "indigo";
+        }
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

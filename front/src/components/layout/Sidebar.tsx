@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { AccentPicker } from "@/components/AccentPicker";
 
 const TOOLS = [
   {
@@ -107,17 +108,23 @@ export function Sidebar() {
       </ScrollArea>
 
       {/* Footer */}
-      <div className="p-3 border-t border-[var(--color-border)] flex items-center justify-between">
-        <a
-          href="https://github.com/olmectron"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 px-2 py-1.5 text-xs text-[var(--color-text-subtle)] hover:text-[var(--color-text-muted)] transition-colors rounded-[var(--radius-sm)] hover:bg-[var(--color-surface-hover)]"
-        >
-          <ExternalLink className="w-3 h-3" />
-          Olmectron
-        </a>
-        <ThemeToggle />
+      <div className="p-3 border-t border-[var(--color-border)] space-y-2">
+        <div className="flex items-center justify-between">
+          <a
+            href="https://github.com/olmectron"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-2 py-1.5 text-xs text-[var(--color-text-subtle)] hover:text-[var(--color-text-muted)] transition-colors rounded-[var(--radius-sm)] hover:bg-[var(--color-surface-hover)]"
+          >
+            <ExternalLink className="w-3 h-3" />
+            Olmectron
+          </a>
+          <ThemeToggle />
+        </div>
+        <div className="flex items-center justify-between px-2">
+          <span className="text-[10px] text-[var(--color-text-subtle)] font-medium">Theme</span>
+          <AccentPicker />
+        </div>
       </div>
     </aside>
   );
