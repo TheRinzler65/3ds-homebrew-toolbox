@@ -32,6 +32,18 @@ export interface AppSettings {
   folderForGames: string;
 }
 
+export interface ROMEntry {
+  name: string;
+  size: number;
+  mtime: number;
+}
+
+export interface ROMFileEntry {
+  name: string;
+  size: number;
+  mtime: number;
+}
+
 export interface Tool {
   id: string;
   name: string;

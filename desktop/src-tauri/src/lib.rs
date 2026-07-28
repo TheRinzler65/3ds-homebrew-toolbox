@@ -1,3 +1,5 @@
+mod rom_commands;
+
 use std::path::PathBuf;
 use std::process::Command;
 use tauri::Manager;
@@ -130,6 +132,12 @@ pub fn run() {
             read_template,
             read_forwarder_list,
             read_forwarder_card,
+            rom_commands::rom_browse,
+            rom_commands::rom_info,
+            rom_commands::rom_to_cia,
+            rom_commands::rom_to_cci,
+            rom_commands::rom_compress,
+            rom_commands::rom_decompress,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

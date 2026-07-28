@@ -7,6 +7,7 @@ import { join, resolve, dirname } from "node:path";
 import { randomUUID } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { existsSync, readdirSync, statSync, readFileSync } from "node:fs";
+import { registerRomRoutes } from "./romManager.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, "..");
@@ -168,9 +169,12 @@ app.get<{ Params: { id: string } }>("/api/forwarders/:id.nds", async (req, reply
   return reply.type("application/octet-stream").send(readFileSync(ndsPath));
 });
 
+// ─── ROM Manager routes ───────────────────────────────────────────────────
+await registerRomRoutes(app);
+
 const PORT = Number(process.env.PORT ?? 3001);
 const HOST = process.env.HOST ?? "0.0.0.0";
 await app.listen({ port: PORT, host: HOST });
-console.log(`✅  Backend CIA actif sur http://${HOST}:${PORT}`);
+console.log(`✅  Backend actif sur http://${HOST}:${PORT}`);
 console.log(`📁  Templates  : ${TEMPLATES_DIR}`);
 console.log(`🔧  make_cia   : ${MAKE_CIA} (${existsSync(MAKE_CIA) ? "✓ trouvé" : "✗ introuvable"})`);
