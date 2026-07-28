@@ -36,12 +36,8 @@ export interface ROMEntry {
   name: string;
   size: number;
   mtime: number;
-}
-
-export interface ROMFileEntry {
-  name: string;
-  size: number;
-  mtime: number;
+  /** Absolute path on the server — set when file was uploaded or browsed from real path */
+  _path?: string;
 }
 
 export interface Tool {

@@ -1,5 +1,6 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
+import multipart from "@fastify/multipart";
 import { execFile } from "node:child_process";
 import { writeFile, readFile, unlink } from "node:fs/promises";
 import { tmpdir, platform } from "node:os";
@@ -44,6 +45,7 @@ const MAKE_CIA = findMakeCia();
 // ─── App ─────────────────────────────────────────────────────────────────────
 const app = Fastify({ logger: true });
 await app.register(cors, { origin: true });
+await app.register(multipart, { limits: { fileSize: 4 * 1024 * 1024 * 1024 } }); // 4GB
 
 // Parser pour application/octet-stream
 app.addContentTypeParser(

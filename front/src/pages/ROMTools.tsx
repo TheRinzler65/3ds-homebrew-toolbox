@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Loader2, FolderOpen } from "lucide-react";
+import { Loader2, FolderOpen, File } from "lucide-react";
 import { toast } from "sonner";
 import { FileList } from "@/components/tools/rom-manager/FileList";
 import { ActionBar } from "@/components/tools/rom-manager/ActionBar";
@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useROMStore } from "@/store/romManagerStore";
 import * as ROM from "@/lib/romManagerService";
+import { InfoPanel } from "@/components/tools/rom-manager/InfoPanel";
+import type { ROMEntry } from "@/types";
 
 export default function ROMToolsPage() {
   const { t } = useTranslation();
@@ -20,6 +22,8 @@ export default function ROMToolsPage() {
   const operations = useROMStore((s) => s.operations);
   const clearOperations = useROMStore((s) => s.clearOperations);
   const [dirInput, setDirInput] = useState(currentDir);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [infoFile, setInfoFile] = useState<ROMEntry | null>(null);
 
   useEffect(() => {
     if (currentDir) {
@@ -44,6 +48,36 @@ export default function ROMToolsPage() {
     if (!dirInput.trim()) return;
     setCurrentDir(dirInput.trim());
     loadDir(dirInput.trim());
+  };
+
+  const handlePickFolder = async () => {
+    setLoading(true);
+    try {
+      const result = await ROM.pickFolder();
+      if (result) {
+        setDirInput(result.dir);
+        setCurrentDir(result.dir);
+        setFiles(result.files);
+      }
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePickFiles = async () => {
+    setLoading(true);
+    try {
+      const files = await ROM.pickROMs();
+      if (files) {
+        setFiles(files);
+      }
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -72,10 +106,20 @@ export default function ROMToolsPage() {
             <Button
               size="sm"
               variant="outline"
-              onClick={handleBrowse}
+              onClick={handlePickFolder}
               disabled={loading}
+              title="Choisir un dossier"
             >
               <FolderOpen className="w-3.5 h-3.5" />
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handlePickFiles}
+              disabled={loading}
+              title="Choisir un ou plusieurs fichiers ROM"
+            >
+              <File className="w-3.5 h-3.5" />
             </Button>
           </div>
 
@@ -112,8 +156,10 @@ export default function ROMToolsPage() {
         </div>
 
         <div className="flex flex-col gap-3 p-5 w-64 shrink-0 border-l border-[var(--color-border)] overflow-y-auto">
-          <ActionBar />
+          <ActionBar onShowInfo={(f) => setInfoFile(f)} />
         </div>
+
+        {infoFile && <InfoPanel file={infoFile} onClose={() => setInfoFile(null)} />}
 
         <ROMSettings />
       </div>

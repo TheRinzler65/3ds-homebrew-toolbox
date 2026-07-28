@@ -38,6 +38,14 @@ pub struct ROMActionResult {
     pub error: Option<String>,
 }
 
+#[derive(Serialize)]
+pub struct ExtendedInfoResult {
+    pub ok: bool,
+    pub info: Option<String>,
+    pub icon_base64: Option<String>,
+    pub error: Option<String>,
+}
+
 #[derive(Deserialize)]
 pub struct BrowseArgs {
     pub path: String,
@@ -81,6 +89,54 @@ pub fn rom_browse(args: BrowseArgs) -> BrowseResult {
         }
         Err(e) => BrowseResult { ok: false, dir, files: vec![], error: Some(e.to_string()) },
     }
+}
+
+#[tauri::command]
+pub fn rom_info_extended(app: tauri::AppHandle, args: PathArgs) -> ExtendedInfoResult {
+    let ctrtool = tool_path(&app, "ctrtool.exe");
+    let seeddb = bin_dir(&app).join("seeddb.bin");
+
+    let mut cmd = Command::new(&ctrtool);
+    if seeddb.exists() {
+        cmd.arg(format!("--seeddb={}", seeddb.display()));
+    }
+    cmd.arg(&args.path);
+    let info_out = match cmd.output() {
+        Ok(out) => String::from_utf8_lossy(&out.stdout).to_string(),
+        Err(e) => return ExtendedInfoResult { ok: false, info: None, icon_base64: None, error: Some(e.to_string()) },
+    };
+
+    let smdh_dir = std::env::temp_dir();
+    let smdh_name = format!("smdh_{}.smdh", uuid::Uuid::new_v4());
+    let smdh_path = smdh_dir.join(&smdh_name);
+    let mut extract = Command::new(&ctrtool);
+    if seeddb.exists() {
+        extract.arg(format!("--seeddb={}", seeddb.display()));
+    }
+    extract.arg(format!("--smdh={}", smdh_path.display())).arg(&args.path);
+    let _ = extract.output();
+
+    let icon_base64 = std::fs::read(&smdh_path).ok().and_then(|raw| {
+        if raw.len() < 0x2408 + 4608 { return None; }
+        let mut rgba = Vec::with_capacity(48 * 48 * 4);
+        for y in 0..48 {
+            for x in 0..48 {
+                let si = 0x2408 + (y * 48 + x) * 2;
+                let pixel = u16::from_le_bytes([raw[si], raw[si + 1]]);
+                let r = ((pixel >> 11) & 0x1F) as u32 * 255 / 31;
+                let g = ((pixel >> 5) & 0x3F) as u32 * 255 / 63;
+                let b = (pixel & 0x1F) as u32 * 255 / 31;
+                rgba.push(r as u8);
+                rgba.push(g as u8);
+                rgba.push(b as u8);
+                rgba.push(255u8);
+            }
+        }
+        Some(base64::Engine::encode(&base64::engine::general_purpose::STANDARD, &rgba))
+    });
+
+    let _ = std::fs::remove_file(&smdh_path);
+    ExtendedInfoResult { ok: true, info: Some(info_out), icon_base64, error: None }
 }
 
 #[tauri::command]

@@ -1,8 +1,8 @@
 import { FastifyInstance } from "fastify";
 import { execFile } from "node:child_process";
-import { writeFile, readFile, unlink, mkdir, readdir, stat } from "node:fs/promises";
+import { writeFile, readFile, unlink, mkdir, readdir, stat, rm } from "node:fs/promises";
 import { tmpdir, platform } from "node:os";
-import { join, resolve, dirname } from "node:path";
+import { join, resolve, dirname, basename } from "node:path";
 import { randomUUID } from "node:crypto";
 import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -32,8 +32,28 @@ const DECRYPT = toolPath("decrypt.exe");
 const Z3DS = toolPath("z3ds_compressor.exe");
 const SEEDDB = join(BIN_DIR, "seeddb.bin");
 
+const UPLOAD_DIR = join(tmpdir(), "multitools-uploads");
+
 export async function registerRomRoutes(app: FastifyInstance) {
   // Ponytail: content-type parser for octet-stream is registered in index.ts
+
+  // ── Upload files (web mode: browser picks files, sends them here) ──────
+  app.post("/api/rom/upload", async (req, reply) => {
+    await mkdir(UPLOAD_DIR, { recursive: true }).catch(() => {});
+    const files: Array<{ name: string; path: string; size: number }> = [];
+    try {
+      for await (const part of req.files()) {
+        const id = randomUUID();
+        const dest = join(UPLOAD_DIR, `${id}_${part.filename}`);
+        const buf = await part.toBuffer();
+        await writeFile(dest, buf);
+        files.push({ name: part.filename, path: dest, size: buf.length });
+      }
+      return reply.send({ ok: true, dir: UPLOAD_DIR, files });
+    } catch (err: any) {
+      return reply.status(500).send({ ok: false, error: err.message });
+    }
+  });
 
   // ── File list from a directory ─────────────────────────────────────────
   app.post("/api/rom/browse", async (req, reply) => {
@@ -65,6 +85,63 @@ export async function registerRomRoutes(app: FastifyInstance) {
       const seedFlag = existsSync(SEEDDB) ? [`--seeddb=${SEEDDB}`] : [];
       const { stdout } = await run(CTRTOOL, [...seedFlag, path]);
       return reply.send({ ok: true, info: stdout });
+    } catch (err: any) {
+      return reply.status(500).send({ ok: false, error: err.stderr || err.message });
+    }
+  });
+
+  // ── Extended ROM info + icon ───────────────────────────────────────────
+  function parseSMDHIcon(raw: Buffer): string | null {
+    // Try two known offsets: 0x2408 (SMDH v1) and 0x4008 (SMDH v2)
+    for (const off of [0x2408, 0x4008]) {
+      if (raw.length < off + 4608) continue;
+      const rgba = Buffer.alloc(48 * 48 * 4);
+      for (let y = 0; y < 48; y++) {
+        for (let x = 0; x < 48; x++) {
+          const si = off + (y * 48 + x) * 2;
+          const pixel = raw.readUInt16LE(si);
+          const r = ((pixel >> 11) & 0x1F) * 255 / 31;
+          const g = ((pixel >> 5) & 0x3F) * 255 / 63;
+          const b = (pixel & 0x1F) * 255 / 31;
+          const di = (y * 48 + x) * 4;
+          rgba[di] = r;
+          rgba[di + 1] = g;
+          rgba[di + 2] = b;
+          rgba[di + 3] = 255;
+        }
+      }
+      return rgba.toString("base64");
+    }
+    return null;
+  }
+
+  app.post("/api/rom/info-extended", async (req, reply) => {
+    const { path } = req.body as { path?: string };
+    if (!path || !existsSync(path)) return reply.status(400).send({ ok: false, error: "File not found" });
+    try {
+      const seedFlag = existsSync(SEEDDB) ? [`--seeddb=${SEEDDB}`] : [];
+      const { stdout } = await run(CTRTOOL, [...seedFlag, path]);
+      let iconData: string | null = null;
+      const tmpIcon = join(tmpdir(), `smdh_${randomUUID()}`);
+      // Try --smdh first, then --exefs as fallback
+      const methods: [string, string][] = [
+        [`--smdh=${tmpIcon}.smdh`, tmpIcon + ".smdh"],
+        [`--exefs=${tmpIcon}_exefs`, join(tmpIcon + "_exefs", "icon")],
+      ];
+      for (const [flag, iconFile] of methods) {
+        try {
+          await run(CTRTOOL, [...seedFlag, flag, path]);
+          if (existsSync(iconFile)) {
+            const raw = await readFile(iconFile);
+            iconData = parseSMDHIcon(raw);
+            if (iconData) break;
+          }
+        } catch { /* try next method */ }
+      }
+      // cleanup
+      await unlink(tmpIcon + ".smdh").catch(() => {});
+      await rm(tmpIcon + "_exefs", { recursive: true }).catch(() => {});
+      return reply.send({ ok: true, info: stdout, iconData });
     } catch (err: any) {
       return reply.status(500).send({ ok: false, error: err.stderr || err.message });
     }

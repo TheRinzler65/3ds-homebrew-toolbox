@@ -138,6 +138,7 @@ pub fn run() {
             rom_commands::rom_to_cci,
             rom_commands::rom_compress,
             rom_commands::rom_decompress,
+            rom_commands::rom_info_extended,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

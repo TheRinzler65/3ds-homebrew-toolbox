@@ -5,8 +5,9 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useROMStore } from "@/store/romManagerStore";
 import * as ROM from "@/lib/romManagerService";
+import type { ROMEntry } from "@/types";
 
-export function ActionBar() {
+export function ActionBar({ onShowInfo }: { onShowInfo?: (f: ROMEntry) => void }) {
   const { t } = useTranslation();
   const files = useROMStore((s) => s.files);
   const selected = useROMStore((s) => s.selected);
@@ -26,7 +27,7 @@ export function ActionBar() {
     setRunning(true);
     for (const f of selectedFiles) {
       const id = `${action}-${f.name}-${Date.now()}`;
-      const fullPath = currentDir ? `${currentDir}/${f.name}` : f.name;
+      const fullPath = f._path || (currentDir ? `${currentDir}/${f.name}` : f.name);
       addOperation({ id, type: action as any, file: f.name, status: "running" });
       try {
         const out = await fn(fullPath);
@@ -87,21 +88,11 @@ export function ActionBar() {
         size="sm"
         variant="outline"
         className="w-full gap-1.5 text-xs"
-        onClick={async () => {
+        onClick={() => {
           if (selectedFiles.length === 0) { toast.warning(t("rom_manager.select_first")); return; }
-          setRunning(true);
-          for (const f of selectedFiles) {
-            try {
-              const fullPath = currentDir ? `${currentDir}/${f.name}` : f.name;
-              const info = await ROM.getROMInfo(fullPath);
-              toast.info(`${f.name}`, { description: info.slice(0, 300), duration: 8000 });
-            } catch (err: any) {
-              toast.error(`${f.name}: ${err.message}`);
-            }
-          }
-          setRunning(false);
+          onShowInfo?.(selectedFiles[0]);
         }}
-        disabled={running || selectedFiles.length === 0}
+        disabled={selectedFiles.length === 0}
       >
         <RefreshCw className="w-3 h-3" />
         {t("rom_manager.info")}
