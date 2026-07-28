@@ -1,11 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  ChevronDown,
-  ChevronUp,
-  RefreshCw,
-  Trash2,
-  Gamepad2,
-} from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +16,7 @@ interface GameItemProps {
 }
 
 export function GameItem({ entry, onRemove, onUpdate }: GameItemProps) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const [ndsFile, setNdsFile] = useState<NDSFile | null>(null);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
@@ -30,8 +26,6 @@ export function GameItem({ entry, onRemove, onUpdate }: GameItemProps) {
   useEffect(() => {
     const nds = new NDSFile(file, (internalData) => {
       onUpdate(id, internalData);
-
-      // Attach canvas
       if (internalData.canvasObject && canvasContainerRef.current) {
         const container = canvasContainerRef.current;
         while (container.firstChild) container.removeChild(container.lastChild!);
@@ -57,89 +51,65 @@ export function GameItem({ entry, onRemove, onUpdate }: GameItemProps) {
     if (ndsFile) ndsFile.gamePath = val;
   };
 
-  const handleReloadTid = () => {
-    ndsFile?.reloadTid();
-  };
-
+  const handleReloadTid = () => ndsFile?.reloadTid();
   const handleRemove = () => {
     ndsFile?.kill();
     onRemove(id);
   };
 
-  const isNTR = !data.gameTitle?.includes("\0");
-
   return (
     <div
       className={cn(
-        "rounded-[var(--radius-md)] border transition-all overflow-hidden",
+        "rounded-[var(--radius-sm)] border transition-colors",
         expanded
-          ? "border-[var(--color-accent)]/40 bg-[var(--color-surface)]"
-          : "border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-text-subtle)]/40"
+          ? "border-[var(--color-accent)]/40"
+          : "border-[var(--color-border)]"
       )}
     >
-      {/* Header row */}
       <div
-        className="flex items-center gap-3 p-3 cursor-pointer select-none"
+        className="flex items-center gap-2.5 p-2.5 cursor-pointer select-none"
         onClick={() => setExpanded((e) => !e)}
       >
-        {/* Game icon */}
         <div
           ref={canvasContainerRef}
-          className="nds-icon-canvas w-12 h-12 rounded-[var(--radius-sm)] overflow-hidden shrink-0 bg-[var(--color-surface-raised)] flex items-center justify-center"
-        >
-          <Gamepad2 className="w-5 h-5 text-[var(--color-text-subtle)]" />
-        </div>
+          className="nds-icon-canvas w-10 h-10 rounded-[var(--radius-xs)] overflow-hidden shrink-0 bg-[var(--color-surface)] flex items-center justify-center"
+        />
 
-        {/* Info */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <p className="text-sm font-medium text-[var(--color-text)] truncate">
-              {data.name || file.name}
-            </p>
-            {data.overrideTid && (
-              <Badge variant="secondary" className="text-[10px] font-mono shrink-0">
-                {data.overrideTid}
-              </Badge>
-            )}
-          </div>
+          <p className="text-sm text-[var(--color-text)] truncate leading-tight">
+            {data.name || file.name}
+          </p>
           <div className="flex items-center gap-2 mt-0.5">
-            <p className="text-xs text-[var(--color-text-subtle)] truncate">
-              {data.publisher || "..."}
-            </p>
-            {data.gamePath && (
-              <p className="text-xs text-[var(--color-accent-text)] truncate hidden sm:block font-mono">
-                {data.gamePath}
-              </p>
+            {data.overrideTid && (
+              <span className="text-[10px] font-mono text-[var(--color-text-subtle)]">
+                {data.overrideTid}
+              </span>
+            )}
+            {data.publisher && (
+              <span className="text-[10px] text-[var(--color-text-subtle)]">
+                {data.publisher}
+              </span>
             )}
           </div>
         </div>
 
-        {/* Chevron */}
-        <Button variant="ghost" size="icon-sm" className="shrink-0" asChild>
-          <span>
-            {expanded ? (
-              <ChevronUp className="w-4 h-4" />
-            ) : (
-              <ChevronDown className="w-4 h-4" />
-            )}
-          </span>
-        </Button>
+        <span className="text-xs text-[var(--color-text-subtle)]">
+          {expanded ? "▲" : "▼"}
+        </span>
       </div>
 
-      {/* Expanded section */}
       {expanded && (
-        <div className="border-t border-[var(--color-border)] bg-[var(--color-surface-raised)]/50 p-4 space-y-4">
-          <div className="grid grid-cols-2 gap-3">
-            {/* TID */}
-            <div className="space-y-1.5">
-              <Label className="text-xs">TID Override</Label>
+        <div className="border-t border-[var(--color-border)] bg-[var(--color-surface)] p-3 space-y-3">
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1">
+              <Label className="text-xs">{t("game_item.tid")}</Label>
               <div className="flex gap-1">
                 <Input
                   value={data.overrideTid ?? ""}
                   onChange={(e) => handleTidChange(e.target.value)}
                   maxLength={4}
-                  className="font-mono text-sm"
-                  placeholder="XXXX"
+                  className="font-mono text-xs"
+                  placeholder={t("game_item.tid_placeholder")}
                 />
                 <Button
                   size="icon"
@@ -148,59 +118,50 @@ export function GameItem({ entry, onRemove, onUpdate }: GameItemProps) {
                     e.stopPropagation();
                     handleReloadTid();
                   }}
-                  title="Régénérer TID aléatoire"
+                  title={t("game_item.tid_new")}
                 >
-                  <RefreshCw className="w-3.5 h-3.5" />
+                  <RefreshCw className="w-3 h-3" />
                 </Button>
               </div>
             </div>
 
-            {/* Game title */}
-            <div className="space-y-1.5">
-              <Label className="text-xs">Titre interne</Label>
+            <div className="space-y-1">
+              <Label className="text-xs">{t("game_item.title")}</Label>
               <Input
                 value={data.gameTitle ?? ""}
                 onChange={(e) => handleTitleChange(e.target.value)}
                 maxLength={12}
-                className="font-mono text-sm"
-                placeholder="TITLE"
+                className="font-mono text-xs"
+                placeholder={t("game_item.title_placeholder")}
               />
             </div>
           </div>
 
-          {/* Game path */}
-          <div className="space-y-1.5">
-            <Label className="text-xs">Chemin ROM sur la SD</Label>
+          <div className="space-y-1">
+            <Label className="text-xs">{t("game_item.sd_path")}</Label>
             <Input
               value={data.gamePath ?? ""}
               onChange={(e) => handlePathChange(e.target.value)}
               className="font-mono text-xs"
-              placeholder="Games/NDS/game.nds"
+              placeholder={t("game_item.sd_placeholder")}
             />
           </div>
 
-          {/* ROM info */}
           <div className="flex items-center justify-between pt-1">
-            <div className="flex gap-2">
-              <Badge variant={isNTR ? "default" : "secondary"}>
-                {isNTR ? "NTR" : "TWL"}
-              </Badge>
-              <Badge variant="outline" className="font-mono text-[10px]">
-                TID: {data.tid || "??"}
+            <div className="flex gap-1.5">
+              <Badge variant="outline">
+                {data.tid || "??"}
               </Badge>
             </div>
-            <Button
-              size="sm"
-              variant="ghost"
-              className="text-[var(--color-danger)] hover:text-red-400 hover:bg-red-900/20"
+            <button
+              className="text-xs text-[var(--color-text-subtle)] hover:text-[var(--color-danger)] transition-colors"
               onClick={(e) => {
                 e.stopPropagation();
                 handleRemove();
               }}
             >
-              <Trash2 className="w-3.5 h-3.5 mr-1.5" />
-              Retirer
-            </Button>
+              {t("game_item.remove")}
+            </button>
           </div>
         </div>
       )}

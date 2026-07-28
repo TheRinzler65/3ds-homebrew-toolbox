@@ -9,14 +9,14 @@ export function AppLayout() {
   return (
     <div className="flex min-h-screen">
       <Sidebar />
-      <main className="flex-1 overflow-auto page-enter">
+      <main className="flex-1 overflow-auto">
         <Outlet />
       </main>
       <Toaster
         theme={theme === "dark" ? "dark" : "light"}
         toastOptions={{
           style: {
-            background: "var(--color-surface-raised)",
+            background: "var(--color-surface)",
             border: "1px solid var(--color-border)",
             color: "var(--color-text)",
           },
