@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Download, Loader2, FileDown } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { saveAs } from "file-saver";
 import JSZip from "jszip";
@@ -81,6 +82,7 @@ async function buildPatchedNDS(
 }
 
 export function GameList({ cardList }: GameListProps) {
+  const { t } = useTranslation();
   const [entries, setEntries] = useState<NDSEntry[]>([]);
   const [savingCIA, setSavingCIA] = useState(false);
   const [savingNDS, setSavingNDS] = useState(false);
@@ -112,16 +114,16 @@ export function GameList({ cardList }: GameListProps) {
 
   const preflightCheck = (): ForwarderCard | null => {
     if (!selectedTarget) {
-      toast.error("Sélectionne une carte cible dans les paramètres.");
+      toast.error(t("game_list.no_target"));
       return null;
     }
     if (entries.length === 0) {
-      toast.warning("Aucune ROM chargée.");
+      toast.warning(t("game_list.no_roms"));
       return null;
     }
     const card = findCard(selectedTarget);
     if (!card) {
-      toast.error("Carte introuvable.");
+      toast.error(t("game_list.card_not_found"));
       return null;
     }
     return card;
@@ -132,7 +134,7 @@ export function GameList({ cardList }: GameListProps) {
     if (!card) return;
 
     setSavingNDS(true);
-    const toastId = toast.loading("Génération des .nds...", { duration: Infinity });
+    const toastId = toast.loading(t("game_list.generating_nds"), { duration: Infinity });
 
     try {
       const results = await Promise.all(
@@ -143,7 +145,7 @@ export function GameList({ cardList }: GameListProps) {
       toast.dismiss(toastId);
 
       if (valid.length === 0) {
-        toast.error("Échec de la génération.");
+        toast.error(t("game_list.generation_failed"));
         return;
       }
 
@@ -154,7 +156,7 @@ export function GameList({ cardList }: GameListProps) {
 
       if (valid.length === 1) {
         saveAs(makeBlob(valid[0].bytes), `${valid[0].name}.nds`);
-        toast.success("Fait.");
+        toast.success(t("game_list.done"));
       } else {
         const zip = new JSZip();
         for (const item of valid) {
@@ -162,12 +164,12 @@ export function GameList({ cardList }: GameListProps) {
         }
         const zipBlob = await zip.generateAsync({ type: "blob" });
         saveAs(zipBlob, `forwarders_nds_${Date.now()}.zip`);
-        toast.success(`${valid.length} .nds prêts.`);
+        toast.success(t("game_list.nds_ready", { count: valid.length }));
       }
     } catch (err) {
       console.error(err);
       toast.dismiss(toastId);
-      toast.error("Erreur inattendue.");
+      toast.error(t("game_list.unexpected_error"));
     } finally {
       setSavingNDS(false);
     }
@@ -178,7 +180,7 @@ export function GameList({ cardList }: GameListProps) {
     if (!card) return;
 
     setSavingCIA(true);
-    const toastId = toast.loading("Conversion CIA...", { duration: Infinity });
+    const toastId = toast.loading(t("game_list.converting_cia"), { duration: Infinity });
 
     try {
       const results = await Promise.all(
@@ -188,14 +190,14 @@ export function GameList({ cardList }: GameListProps) {
 
       if (patches.length === 0) {
         toast.dismiss(toastId);
-        toast.error("Impossible de générer les templates.");
+        toast.error(t("game_list.template_failed"));
         return;
       }
 
       const ciaResults = await Promise.allSettled(
         patches.map(async (p) => {
           const res = await convertToCIA(p.bytes, p.name + ".nds");
-          if (!res.success) throw new Error(res.error ?? "Erreur CIA");
+          if (!res.success) throw new Error(res.error ?? t("game_list.cia_error"));
           return { bytes: res.ciaBytes, name: p.name };
         })
       );
@@ -212,12 +214,12 @@ export function GameList({ cardList }: GameListProps) {
       if (valid.length === 0) {
         const firstErr = ciaResults.find(r => r.status === "rejected") as PromiseRejectedResult | undefined;
         const detail = firstErr?.reason?.message ?? firstErr?.reason ?? "";
-        toast.error(detail ? `Erreur make_cia : ${detail}` : "Échec de la conversion.");
+        toast.error(detail ? t("game_list.cia_error_detail", { detail }) : t("game_list.cia_conversion_failed"));
         return;
       }
 
       if (failCount > 0)
-        toast.warning(`${failCount} échec(s). ${valid.length} CIA générés.`);
+        toast.warning(t("game_list.cia_partial", { failCount, validCount: valid.length }));
 
       if (isTauri()) {
         try {
@@ -231,7 +233,7 @@ export function GameList({ cardList }: GameListProps) {
             });
             if (path) {
               await writeFile(path, valid[0].bytes);
-              toast.success("CIA enregistré.");
+              toast.success(t("game_list.cia_saved"));
             }
           } else {
             const zip = new JSZip();
@@ -243,29 +245,29 @@ export function GameList({ cardList }: GameListProps) {
             });
             if (path) {
               await writeFile(path, blob);
-              toast.success(`${valid.length} CIA archivés.`);
+              toast.success(t("game_list.cia_archived", { count: valid.length }));
             }
           }
         } catch (e) {
-          toast.error(`Erreur sauvegarde : ${e instanceof Error ? e.message : e}`);
+          toast.error(t("game_list.save_error", { message: e instanceof Error ? e.message : e }));
         }
       } else {
         if (valid.length === 1) {
           const blob = new Blob([valid[0].bytes], { type: "application/octet-stream" });
           saveAs(blob, `${valid[0].name}.cia`);
-          toast.success("CIA prêt.");
+          toast.success(t("game_list.cia_ready"));
         } else {
           const zip = new JSZip();
           for (const v of valid) zip.file(`${v.name}.cia`, v.bytes);
           const blob = await zip.generateAsync({ type: "blob" });
           saveAs(blob, `forwarders_${Date.now()}.zip`);
-          toast.success(`${valid.length} CIA archivés.`);
+          toast.success(t("game_list.cia_archived", { count: valid.length }));
         }
       }
     } catch (err) {
       console.error(err);
       toast.dismiss(toastId);
-      toast.error("Erreur inattendue.");
+      toast.error(t("game_list.unexpected_error"));
     } finally {
       setSavingCIA(false);
     }
@@ -281,7 +283,7 @@ export function GameList({ cardList }: GameListProps) {
         <>
           <div className="flex items-center gap-2">
             <p className="text-xs text-[var(--color-text-muted)] flex-1">
-              {entries.length} ROM{entries.length > 1 ? "s" : ""}
+              {t("game_list.rom_count", { count: entries.length })}
             </p>
             <label className="text-xs text-[var(--color-accent-text)] hover:underline cursor-pointer">
               <input
@@ -295,7 +297,7 @@ export function GameList({ cardList }: GameListProps) {
                   e.target.value = "";
                 }}
               />
-              + Ajouter
+              {t("game_list.add")}
             </label>
           </div>
 
@@ -316,11 +318,11 @@ export function GameList({ cardList }: GameListProps) {
         <div className="space-y-1.5 pt-3">
           {isTauri() ? (
             <p className="text-xs text-[var(--color-text-subtle)]">
-              Conversion via make_cia.exe (local).
+              {t("game_list.mode_tauri")}
             </p>
           ) : (
             <p className="text-xs text-[var(--color-text-subtle)]">
-              Backend requis : <code className="font-mono">cd back && npm run dev</code>
+              {t("game_list.mode_web")} <code className="font-mono">cd back && npm run dev</code>
             </p>
           )}
 
@@ -335,9 +337,7 @@ export function GameList({ cardList }: GameListProps) {
             ) : (
               <Download className="w-4 h-4" />
             )}
-            {savingCIA
-              ? "Conversion..."
-              : `${entries.length} CIA`}
+            {savingCIA ? t("game_list.converting") : t("game_list.cia_button", { count: entries.length })}
           </Button>
 
           <Button
@@ -351,7 +351,7 @@ export function GameList({ cardList }: GameListProps) {
             ) : (
               <FileDown className="w-4 h-4" />
             )}
-            {savingNDS ? "Génération..." : ".nds patché"}
+            {savingNDS ? t("game_list.generating") : t("game_list.nds_button")}
           </Button>
         </div>
       )}

@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 
 interface DropZoneProps {
@@ -6,6 +7,7 @@ interface DropZoneProps {
 }
 
 export function DropZone({ onFiles }: DropZoneProps) {
+  const { t } = useTranslation();
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -47,10 +49,10 @@ export function DropZone({ onFiles }: DropZoneProps) {
       />
 
       <p className="text-sm text-[var(--color-text-muted)]">
-        {dragging ? "Lâche ici" : "Dépose un .nds ou .dsi"}
+        {dragging ? t("dropzone.drag_active") : t("dropzone.drag_idle")}
       </p>
       <p className="text-xs text-[var(--color-text-subtle)]">
-        ou clique pour choisir
+        {t("dropzone.click")}
       </p>
     </div>
   );

@@ -1,11 +1,14 @@
 import { Link, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { LanguagePicker } from "@/components/LanguagePicker";
 
 export function Sidebar() {
   const location = useLocation();
+  const { t } = useTranslation();
 
   return (
     <aside className="flex flex-col w-56 min-h-screen bg-[var(--color-surface)] border-r border-[var(--color-border)] shrink-0">
@@ -14,7 +17,7 @@ export function Sidebar() {
           MultiTools
         </span>
         <p className="text-[11px] text-[var(--color-text-subtle)] mt-0.5">
-          Homebrew Toolbox
+          {t("sidebar.subtitle")}
         </p>
       </div>
 
@@ -29,7 +32,7 @@ export function Sidebar() {
                 : "text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-hover)]"
             )}
           >
-            Accueil
+            {t("sidebar.home")}
           </Link>
 
           <Separator className="my-1.5" />
@@ -43,7 +46,7 @@ export function Sidebar() {
                 : "text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-hover)]"
             )}
           >
-            NDS Forwarder
+            {t("sidebar.nds_forwarder")}
           </Link>
         </nav>
       </ScrollArea>
@@ -58,6 +61,10 @@ export function Sidebar() {
           olmectron
         </a>
         <ThemeToggle />
+      </div>
+
+      <div className="px-3 pb-3 border-t border-[var(--color-border)] pt-2">
+        <LanguagePicker />
       </div>
     </aside>
   );

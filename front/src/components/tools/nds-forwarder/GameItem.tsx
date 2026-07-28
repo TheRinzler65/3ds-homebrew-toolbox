@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { RefreshCw, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,7 @@ interface GameItemProps {
 }
 
 export function GameItem({ entry, onRemove, onUpdate }: GameItemProps) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const [ndsFile, setNdsFile] = useState<NDSFile | null>(null);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
@@ -100,14 +102,14 @@ export function GameItem({ entry, onRemove, onUpdate }: GameItemProps) {
         <div className="border-t border-[var(--color-border)] bg-[var(--color-surface)] p-3 space-y-3">
           <div className="grid grid-cols-2 gap-2">
             <div className="space-y-1">
-              <Label className="text-xs">TID</Label>
+              <Label className="text-xs">{t("game_item.tid")}</Label>
               <div className="flex gap-1">
                 <Input
                   value={data.overrideTid ?? ""}
                   onChange={(e) => handleTidChange(e.target.value)}
                   maxLength={4}
                   className="font-mono text-xs"
-                  placeholder="XXXX"
+                  placeholder={t("game_item.tid_placeholder")}
                 />
                 <Button
                   size="icon"
@@ -116,7 +118,7 @@ export function GameItem({ entry, onRemove, onUpdate }: GameItemProps) {
                     e.stopPropagation();
                     handleReloadTid();
                   }}
-                  title="Nouveau TID aléatoire"
+                  title={t("game_item.tid_new")}
                 >
                   <RefreshCw className="w-3 h-3" />
                 </Button>
@@ -124,24 +126,24 @@ export function GameItem({ entry, onRemove, onUpdate }: GameItemProps) {
             </div>
 
             <div className="space-y-1">
-              <Label className="text-xs">Titre</Label>
+              <Label className="text-xs">{t("game_item.title")}</Label>
               <Input
                 value={data.gameTitle ?? ""}
                 onChange={(e) => handleTitleChange(e.target.value)}
                 maxLength={12}
                 className="font-mono text-xs"
-                placeholder="TITLE"
+                placeholder={t("game_item.title_placeholder")}
               />
             </div>
           </div>
 
           <div className="space-y-1">
-            <Label className="text-xs">Chemin SD</Label>
+            <Label className="text-xs">{t("game_item.sd_path")}</Label>
             <Input
               value={data.gamePath ?? ""}
               onChange={(e) => handlePathChange(e.target.value)}
               className="font-mono text-xs"
-              placeholder="Games/NDS/game.nds"
+              placeholder={t("game_item.sd_placeholder")}
             />
           </div>
 
@@ -158,7 +160,7 @@ export function GameItem({ entry, onRemove, onUpdate }: GameItemProps) {
                 handleRemove();
               }}
             >
-              Retirer
+              {t("game_item.remove")}
             </button>
           </div>
         </div>

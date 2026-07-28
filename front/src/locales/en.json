@@ -1,0 +1,87 @@
+{
+  "home": {
+    "subtitle": "Tools for Nintendo homebrew projects.",
+    "nds_description": "Generate CIA forwarders to launch NDS ROMs straight from your 3DS Home Menu.",
+    "start": "Launch →",
+    "footer": "Based on work by olmectron and RocketRobz."
+  },
+  "sidebar": {
+    "home": "Home",
+    "nds_forwarder": "NDS Forwarder",
+    "subtitle": "Homebrew Toolbox"
+  },
+  "nds_forwarder": {
+    "subtitle": "Turn .nds or .dsi ROMs into .cia files for 3DS.",
+    "loading_cards": "cards...",
+    "card_count": "{{count}} card",
+    "card_count_plural": "{{count}} cards",
+    "error_tauri": "Local templates not found (missing templates ?).",
+    "error_web": "Backend unreachable. Make sure the server is running on :3001."
+  },
+  "dropzone": {
+    "drag_active": "Drop here",
+    "drag_idle": "Drop a .nds or .dsi file",
+    "click": "or click to browse"
+  },
+  "game_item": {
+    "tid": "TID",
+    "tid_placeholder": "XXXX",
+    "tid_new": "New random TID",
+    "title": "Title",
+    "title_placeholder": "TITLE",
+    "sd_path": "SD path",
+    "sd_placeholder": "Games/NDS/game.nds",
+    "remove": "Remove"
+  },
+  "game_list": {
+    "no_target": "Select a target card in Settings.",
+    "no_roms": "No ROMs loaded.",
+    "card_not_found": "Card not found.",
+    "generating_nds": "Generating .nds...",
+    "generation_failed": "Generation failed.",
+    "done": "Done.",
+    "nds_ready": "{{count}} .nds ready.",
+    "unexpected_error": "Unexpected error.",
+    "converting_cia": "Converting to CIA...",
+    "template_failed": "Could not generate templates.",
+    "cia_error": "CIA error",
+    "cia_error_detail": "make_cia error: {{detail}}",
+    "cia_conversion_failed": "Conversion failed.",
+    "cia_partial": "{{failCount}} failed. {{validCount}} CIA generated.",
+    "cia_saved": "CIA saved.",
+    "cia_archived": "{{count}} CIA archived.",
+    "save_error": "Save error: {{message}}",
+    "cia_ready": "CIA ready.",
+    "rom_count": "{{count}} ROM",
+    "rom_count_plural": "{{count}} ROMs",
+    "add": "+ Add",
+    "mode_tauri": "Conversion via make_cia.exe (local).",
+    "mode_web": "Backend required:",
+    "converting": "Converting...",
+    "cia_button": "{{count}} CIA",
+    "generating": "Generating...",
+    "nds_button": ".nds patched"
+  },
+  "settings": {
+    "folder_updated": "Folder updated.",
+    "title": "Settings",
+    "target_card": "Target card",
+    "choose": "Choose...",
+    "required": "Required to generate.",
+    "options": "Options",
+    "random_tid": "Random TID",
+    "auto_path": "Auto path",
+    "keep_nds": "Keep .nds",
+    "games_folder": "Games folder (SD)",
+    "folder_placeholder": "Games/NDS"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "language": {
+    "fr": "FR",
+    "en": "EN",
+    "es": "ES"
+  }
+}
