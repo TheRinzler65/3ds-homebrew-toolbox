@@ -33,7 +33,7 @@ const Z3DS = toolPath("z3ds_compressor.exe");
 const SEEDDB = join(BIN_DIR, "seeddb.bin");
 
 export async function registerRomRoutes(app: FastifyInstance) {
-  app.addContentTypeParser("application/octet-stream", { parseAs: "buffer", bodyLimit: 512 * 1024 * 1024 }, (_req, body, done) => done(null, body));
+  // Ponytail: content-type parser for octet-stream is registered in index.ts
 
   // ── File list from a directory ─────────────────────────────────────────
   app.post("/api/rom/browse", async (req, reply) => {
