@@ -1,0 +1,117 @@
+{
+  "home": {
+    "subtitle": "Des outils pour projets homebrew Nintendo.",
+    "nds_description": "Génère des CIA forwarders pour lancer des ROMs NDS depuis le menu Home de ta 3DS.",
+    "rom_description": "Convertis, déchiffre et compresse des ROMs 3DS en batch.",
+    "start": "Lancer →",
+    "footer": "Basé sur les travaux d'olmectron et RocketRobz."
+  },
+  "sidebar": {
+    "home": "Accueil",
+    "nds_forwarder": "NDS Forwarder",
+    "rom_manager": "3DS ROM Manager",
+    "subtitle": "Homebrew Toolbox"
+  },
+  "nds_forwarder": {
+    "subtitle": "Des ROMs .nds ou .dsi vers un .cia pour 3DS.",
+    "loading_cards": "cartes...",
+    "card_count": "{{count}} carte",
+    "card_count_plural": "{{count}} cartes",
+    "error_tauri": "Ressources locales introuvables (templates manquants ?).",
+    "error_web": "Backend inaccessible. Vérifie que le serveur tourne sur :3001."
+  },
+  "dropzone": {
+    "drag_active": "Lâche ici",
+    "drag_idle": "Dépose un .nds ou .dsi",
+    "click": "ou clique pour choisir"
+  },
+  "game_item": {
+    "tid": "TID",
+    "tid_placeholder": "XXXX",
+    "tid_new": "Nouveau TID aléatoire",
+    "title": "Titre",
+    "title_placeholder": "TITLE",
+    "sd_path": "Chemin SD",
+    "sd_placeholder": "Games/NDS/game.nds",
+    "remove": "Retirer"
+  },
+  "game_list": {
+    "no_target": "Sélectionne une carte cible dans les paramètres.",
+    "no_roms": "Aucune ROM chargée.",
+    "card_not_found": "Carte introuvable.",
+    "generating_nds": "Génération des .nds...",
+    "generation_failed": "Échec de la génération.",
+    "done": "Fait.",
+    "nds_ready": "{{count}} .nds prêts.",
+    "unexpected_error": "Erreur inattendue.",
+    "converting_cia": "Conversion CIA...",
+    "template_failed": "Impossible de générer les templates.",
+    "cia_error": "Erreur CIA",
+    "cia_error_detail": "Erreur make_cia : {{detail}}",
+    "cia_conversion_failed": "Échec de la conversion.",
+    "cia_partial": "{{failCount}} échec(s). {{validCount}} CIA générés.",
+    "cia_saved": "CIA enregistré.",
+    "cia_archived": "{{count}} CIA archivés.",
+    "save_error": "Erreur sauvegarde : {{message}}",
+    "cia_ready": "CIA prêt.",
+    "rom_count": "{{count}} ROM",
+    "rom_count_plural": "{{count}} ROMs",
+    "add": "+ Ajouter",
+    "mode_tauri": "Conversion via make_cia.exe (local).",
+    "mode_web": "Backend requis :",
+    "converting": "Conversion...",
+    "cia_button": "{{count}} CIA",
+    "generating": "Génération...",
+    "nds_button": ".nds patché"
+  },
+  "settings": {
+    "folder_updated": "Dossier mis à jour.",
+    "title": "Paramètres",
+    "target_card": "Carte cible",
+    "choose": "Choisir...",
+    "required": "Obligatoire pour générer.",
+    "options": "Options",
+    "random_tid": "TID aléatoire",
+    "auto_path": "Chemin auto",
+    "keep_nds": "Garder .nds",
+    "games_folder": "Dossier jeux (SD)",
+    "folder_placeholder": "Games/NDS"
+  },
+  "theme": {
+    "light": "Clair",
+    "dark": "Sombre"
+  },
+  "language": {
+    "fr": "FR",
+    "en": "EN",
+    "es": "ES"
+  },
+  "rom_manager": {
+    "title": "3DS ROM Manager",
+    "subtitle": "Convertis, déchiffre et compresse des ROMs 3DS.",
+    "source_dir": "Dossier source",
+    "loading": "Chargement...",
+    "no_files": "Aucune ROM trouvée.",
+    "file_count": "{{count}} fichier",
+    "file_count_plural": "{{count}} fichiers",
+    "select_all": "Tout sélectionner",
+    "deselect_all": "Tout désélectionner",
+    "select_first": "Sélectionne des fichiers d'abord.",
+    "to_cia": "Convertir en CIA",
+    "to_cci": "Convertir en CCI",
+    "compress": "Compresser Z3DS",
+    "decompress": "Décompresser",
+    "decrypt": "Déchiffrer",
+    "info": "Infos ROM",
+    "running": "Opération en cours...",
+    "batch_done": "Opérations terminées.",
+    "operations": "Opérations",
+    "clear": "Effacer",
+    "settings_title": "Paramètres",
+    "z3ds_level": "Niveau Z3DS",
+    "z3ds_fast": "Rapide",
+    "z3ds_balanced": "Équilibré",
+    "z3ds_best": "Meilleur",
+    "delete_source": "Supprimer la source"
+  }
+}
